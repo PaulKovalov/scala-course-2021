@@ -16,7 +16,7 @@ object adt:
     // sealed means that subclasses are only possible to define in the same file
     case Value(v: V) extends ErrorOr[V]
 
-    case Error extends ErrorOr[Nothing]
+    case Error(v: Throwable) extends ErrorOr[Nothing]
 
     /* 
       The method is used for defining execution pipelines
@@ -31,8 +31,8 @@ object adt:
           try 
             f(v)
           catch
-            case _: Throwable => ErrorOr.Error
-        case ErrorOr.Error => ErrorOr.Error
+            case e: Throwable => ErrorOr.Error(e)
+        case ErrorOr.Error(e) => ErrorOr.Error(e)
 
     /* 
       The method is used for changing the internal object
@@ -47,8 +47,8 @@ object adt:
           try 
             ErrorOr.Value(f(v))
           catch
-            case _: Throwable => ErrorOr.Error  
-        case ErrorOr.Error => ErrorOr.Error
+            case e: Throwable => ErrorOr.Error(e)  
+        case ErrorOr.Error(e) => ErrorOr.Error(e)
       
   // Companion object to define constructor
   object ErrorOr:
@@ -59,4 +59,4 @@ object adt:
       no exception is thrown but the case for an error is returned
     */
     def apply[V](v: V): ErrorOr[V] =
-      if v == null then ErrorOr.Error else ErrorOr.Value(v)
+      if v == null then ErrorOr.Error(new NullPointerException()) else ErrorOr.Value(v)
