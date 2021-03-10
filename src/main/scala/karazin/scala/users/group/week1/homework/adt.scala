@@ -18,7 +18,7 @@ object adt:
     // sealed means that subclasses are only possible to define in the same file
     case Value(v: V) extends ErrorOr[V]
 
-    case Error(v: Throwable) extends ErrorOr[Nothing]
+    case Error(v: Throwable) extends ErrorOr[V]
 
     /* 
       The method is used for defining execution pipelines
