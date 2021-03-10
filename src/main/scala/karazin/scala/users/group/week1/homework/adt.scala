@@ -61,4 +61,7 @@ object adt:
       no exception is thrown but the case for an error is returned
     */
     def apply[V](v: V): ErrorOr[V] =
-      if v == null then ErrorOr.Error(new NullPointerException()) else ErrorOr.Value(v)
+      if v == null then
+        ErrorOr.Error(new NullPointerException("Can not construct an ErrorOr instance from null"))
+      else 
+        ErrorOr.Value(v)
