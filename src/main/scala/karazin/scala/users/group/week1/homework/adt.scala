@@ -33,7 +33,7 @@ object adt:
           try 
             f(v)
           catch
-            case NonFatal(e): Throwable => ErrorOr.Error(e)
+            case NonFatal(e) => ErrorOr.Error(e)
         case ErrorOr.Error(e) => ErrorOr.Error(e)
 
     /* 
@@ -49,7 +49,7 @@ object adt:
           try 
             ErrorOr.Value(f(v))
           catch
-            case NonFatal(e): Throwable => ErrorOr.Error(e)  
+            case NonFatal(e) => ErrorOr.Error(e)  
         case ErrorOr.Error(e) => ErrorOr.Error(e)
       
   // Companion object to define constructor
