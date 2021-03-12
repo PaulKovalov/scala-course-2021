@@ -12,7 +12,7 @@ object program:
    Getting view for all user's posts
    Provide a result type
   */
-  def getPostsViews(): ErrorOr[List[ErrorOr[PostView]]] = 
+  def getPostsViews(): ErrorOr[List[ErrorOr[PostView]]] =
     for
       profile   ← getUserProfile()
       posts     ← getPosts(profile.userId)
@@ -35,7 +35,7 @@ object program:
   */
   def getPostsViewDesugared(): ErrorOr[List[ErrorOr[PostView]]] =
     getUserProfile() flatMap  { profile =>
-      getPosts(profile.userId) map  { 
+      getPosts(profile.userId) map  {
         posts => posts map {
           post => getComments(post.postId) flatMap {
             comments => getLikes(post.postId) flatMap {

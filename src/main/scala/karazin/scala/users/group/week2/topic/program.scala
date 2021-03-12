@@ -14,6 +14,7 @@ object program:
       profile   ← getUserProfile()
       posts     ← getPosts(profile.userId)
       postsView ← Option(posts map { post ⇒ getPostView(post) })
+      if postsView.length == 42
     yield postsView
   }
 
@@ -27,4 +28,19 @@ object program:
   }
 
   // Desugared version of the previous two methods
-  def getPostsViewDesugared(): Option[List[Option[PostView]]] = ???
+  def getPostsViewDesugared(): Option[List[Option[PostView]]] = 
+    getUserProfile() flatMap { profile ⇒
+      getPosts(profile.userId)
+    } map { posts ⇒
+      posts map { post ⇒
+        getComments(post.postId) flatMap { comments ⇒
+          getLikes(post.postId) flatMap { likes ⇒
+            getShares(post.postId) map { shares ⇒
+              PostView(post, comments, likes, shares)
+            }
+          }
+        }
+      }
+    } withFilter { postsView ⇒
+      postsView.length == 42
+    }

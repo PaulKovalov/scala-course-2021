@@ -29,8 +29,8 @@ object adt:
     */ 
     def flatMap[Q](f: V => ErrorOr[Q]): ErrorOr[Q] =
       this match
-        case ErrorOr.Value(v) => 
-          try 
+        case ErrorOr.Value(v) =>
+          try
             f(v)
           catch
             case NonFatal(e) => ErrorOr.Error(e)
@@ -45,11 +45,11 @@ object adt:
      */
     def map[Q](f: V => Q): ErrorOr[Q] =
       this match
-        case ErrorOr.Value(v) => 
-          try 
+        case ErrorOr.Value(v) =>
+          try
             ErrorOr.Value(f(v))
           catch
-            case NonFatal(e) => ErrorOr.Error(e)  
+            case NonFatal(e) => ErrorOr.Error(e)
         case ErrorOr.Error(e) => ErrorOr.Error(e)
       
   // Companion object to define constructor
@@ -63,5 +63,5 @@ object adt:
     def apply[V](v: V): ErrorOr[V] =
       if v == null then
         ErrorOr.Error(new NullPointerException("Can not construct an ErrorOr instance from null"))
-      else 
+      else
         ErrorOr.Value(v)

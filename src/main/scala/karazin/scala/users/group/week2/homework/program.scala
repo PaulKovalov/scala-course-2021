@@ -8,6 +8,12 @@ import services._
 object program:
   
   /*
+   Print all view for all user's posts if they exists
+  */
+  def printPostsViews(): ErrorOr[List[PostView]] = ???
+ 
+  
+  /*
    Getting view for all user's posts if they exists
   */
   def getPostsViews(): ErrorOr[List[PostView]] = ???

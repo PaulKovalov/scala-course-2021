@@ -22,6 +22,14 @@ object desugaring:
    for
      profile ← getUserProfile()
      posts   ← getPosts(profile.userId)
+     if posts.nonEmpty
    yield posts.head
    
-  def getUserFirstPostsDesugared: Option[Post] = ???
+  def getUserFirstPostsDesugared: Option[Post] = 
+    getUserProfile() flatMap { profile ⇒
+      getPosts(profile.userId)
+    } withFilter { posts ⇒
+      posts.nonEmpty
+    } map { posts ⇒
+      posts.head
+    }
