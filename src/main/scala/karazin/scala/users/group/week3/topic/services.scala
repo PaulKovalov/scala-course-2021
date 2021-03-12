@@ -88,5 +88,3 @@ object services:
       println("Got shares...")
       Share(userId = UUID.randomUUID(), postId = UUID.randomUUID()) :: Nil
     }
-
-

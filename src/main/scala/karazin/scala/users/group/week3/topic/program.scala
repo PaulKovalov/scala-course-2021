@@ -57,5 +57,5 @@ object program extends App:
       shares    ← getSharesService
     yield PostView(post, comments, likes, shares)
   
-  Await.result(getPostView(Post(userId = UUID.randomUUID(), postId = UUID.randomUUID())), 20 seconds)
+  println(Await.result(getPostView(Post(userId = UUID.randomUUID(), postId = UUID.randomUUID())), 20 seconds))
   
