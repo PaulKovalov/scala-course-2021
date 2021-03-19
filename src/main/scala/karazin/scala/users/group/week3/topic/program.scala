@@ -38,7 +38,7 @@ object program extends App:
     yield PostView(post, comments, likes, shares)
   
   Await.result(getPostViewWrongWay(Post(userId = UUID.randomUUID(), postId = UUID.randomUUID())), 20 seconds)
-  
+
   // Getting view for a particular user's post
   def getPostView(post: Post): Future[PostView] = 
     /* 
