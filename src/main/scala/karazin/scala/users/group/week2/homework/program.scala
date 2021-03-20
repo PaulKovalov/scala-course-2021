@@ -25,7 +25,12 @@ object program:
     for
       profile   <- getUserProfile()
       posts     <- getPosts(profile.userId)
-      postsView <- ErrorOr(posts map { post ⇒ getPostView(post) })
+      postsView <- ErrorOr(posts map { 
+        post ⇒ getPostView(post) match {
+          case ErrorOr.Value(PostView(post, comments, likes, shares)) => PostView(post, comments, likes, shares)
+          case _ => throw new Exception("Get post view returned error") 
+        }
+      })
     yield postsView
 
   /* 
@@ -45,9 +50,18 @@ object program:
   def getPostsViewDesugared(): ErrorOr[List[PostView]] =
     getUserProfile() flatMap  { profile =>
       getPosts(profile.userId) map  {
-        posts => posts flatMap  {
-          post => getComments(post.postId) 
-        }
+        posts => posts map  {
+          post => getComments(post.postId) flatMap {
+            comments => getLikes(post.postId) flatMap {
+              likes => getShares(post.postId) map {
+                shares => PostView(post, comments, likes, shares)
+              } 
+            }
+          } match {
+            case ErrorOr.Value(PostView(post, comments, likes, shares)) => PostView(post, comments, likes, shares)
+            case _ => throw new Exception("Get post view returned error")   
+          }
+        } 
       }
     }
 

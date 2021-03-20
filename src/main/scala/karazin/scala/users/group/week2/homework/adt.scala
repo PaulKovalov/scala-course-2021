@@ -72,12 +72,7 @@ object adt:
     */
     def flatten[U](implicit ev: V <:< ErrorOr[U]): ErrorOr[U] =
       this match
-        case ErrorOr.Value(v) => 
-          try
-            ev(v)
-          catch
-            case NonFatal(e) => ErrorOr.Error(e)
-        
+        case ErrorOr.Value(v) => ev(v)
         case ErrorOr.Error(v)    => ErrorOr.Error(v)
         case null                => ErrorOr.Error(new Exception("flatten failed to match object, it was null"))
     
