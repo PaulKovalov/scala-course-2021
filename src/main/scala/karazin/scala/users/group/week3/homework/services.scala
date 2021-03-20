@@ -9,7 +9,7 @@ import karazin.scala.users.group.week3.homework.model._
 
 object services:
   
-  def getUserProfile()(ec: ExecutionContext): Future[UserProfile] =
+  def getUserProfile(ec: ExecutionContext): Future[UserProfile] =
     Future {
       UserProfile(UUID.randomUUID())
     }(ec)

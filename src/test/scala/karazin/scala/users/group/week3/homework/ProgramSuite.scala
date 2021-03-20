@@ -20,9 +20,14 @@ class ProgramSuite extends munit.FunSuite:
   
   test("program works") {
     Future {
-      val postViewFuture = getPostView(Post(userId = UUID.randomUUID(), postId = UUID.randomUUID()))
+      val userId = UUID.randomUUID()
+      val postId = UUID.randomUUID()
+      val postViewFuture = getPostView(Post(userId = userId, postId = postId))
       postViewFuture map { postView =>
-        assertNotNull(postView)
+        postView match {
+          case PostView(Post(`userId`, `postId`),_,_,_) => assert(true)
+          case _ => fail(s"Values of userId or postId were not equal to ${userId} and ${postId}")
+        } 
       }
     }
   }

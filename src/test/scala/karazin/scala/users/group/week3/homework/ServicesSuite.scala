@@ -19,7 +19,7 @@ class ServicesSuite extends munit.FunSuite:
 
   test("getUserProfile returns success future") {
     Future {
-      val profileFuture = getUserProfile()(ExecutionContext.global)
+      val profileFuture = getUserProfile(ExecutionContext.global)
       profileFuture map { profile => assertNotNull(profile)}
     }
   }
