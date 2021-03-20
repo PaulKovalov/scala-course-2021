@@ -64,18 +64,7 @@ object adt:
       Make sure that in case of failing the method with exception
       no exception is thrown but the case for an error is returned
      */
-    def withFilter(p: V => Boolean): ErrorOr[V] =
-      this match
-        case ErrorOr.Error(v)         => ErrorOr.Error(v)
-        case ErrorOr.Value(v)         =>
-          try
-            if p(v) then
-              ErrorOr.Value(v)
-            else
-              ErrorOr.Error(null)
-          catch
-            case NonFatal(e) => ErrorOr.Error(e)
-        case null                      => ErrorOr.Error(new Exception("withFilter failed to match object, it was null"))
+    def withFilter(p: V => Boolean): ErrorOr[V] = ???
   
     /* 
       The method is used for getting rid of internal box
@@ -109,10 +98,9 @@ object adt:
       Make sure that in case of failing the method with exception
       no exception is thrown but the case for an error is returned
     */
-    def apply[V](v: V): ErrorOr[V] =
-      if v == null then
-        ErrorOr.Error(new NullPointerException("Can not construct an ErrorOr instance from null"))
-      else
-        ErrorOr.Value(v)
-      
-  
+    def apply[V](v: V)(implicit ev: V <:< Throwable = null) : ErrorOr[V] =
+//      Option(ev).fold[ErrorOr[V]](ErrorOr.Value(v))(_ => ErrorOr.Error(v))
+      Option(ev) match {
+        case Some(x) => ErrorOr.Value(v)
+        case None    => ErrorOr.Error(v)  
+      }

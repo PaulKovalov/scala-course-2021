@@ -10,17 +10,18 @@ object program:
   /*
    Print all view for all user's posts if they exists
   */
-  def printPostsViews(): ErrorOr[List[PostView]] = 
-    // didn't really get how to use flatten here
-    getPostsViews() flatten { postsViews => 
-      postsViews
+  def printPostsViews(): ErrorOr[List[PostView]] =
+    val postViews = getPostsViews()
+    postViews foreach { listOfPosts =>
+      listOfPosts foreach(post => println(post))
     }
+    postViews
 
 
   /*
    Getting view for all user's posts if they exists
   */
-  def getPostsViews(): ErrorOr[List[ErrorOr[PostView]]] =
+  def getPostsViews(): ErrorOr[List[PostView]] =
     for
       profile   <- getUserProfile()
       posts     <- getPosts(profile.userId)
@@ -41,17 +42,11 @@ object program:
   /*
    Provide desugared version of the previous two methods
   */
-  def getPostsViewDesugared(): ErrorOr[List[ErrorOr[PostView]]] =
+  def getPostsViewDesugared(): ErrorOr[List[PostView]] =
     getUserProfile() flatMap  { profile =>
       getPosts(profile.userId) map  {
-        posts => posts map {
-          post => getComments(post.postId) flatMap {
-            comments => getLikes(post.postId) flatMap {
-              likes => getShares(post.postId) map {
-                shares => PostView(post, comments, likes, shares)
-              }
-            }
-          }
+        posts => posts flatMap  {
+          post => getComments(post.postId) 
         }
       }
     }
