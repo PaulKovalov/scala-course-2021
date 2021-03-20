@@ -20,17 +20,35 @@ object program:
 
   /*
    Getting view for all user's posts if they exists
+   If at least one ErrorOr has an error, whole method fails
   */
-  def getPostsViews(): ErrorOr[List[PostView]] =
+  def getPostsViewsAndErrorsAreExtremelyImportant(): ErrorOr[List[PostView]] =
     for
       profile   <- getUserProfile()
       posts     <- getPosts(profile.userId)
-      postsView <- ErrorOr(posts map { 
+      postsView <- ErrorOr(posts map {
         post ⇒ getPostView(post) match {
           case ErrorOr.Value(PostView(post, comments, likes, shares)) => PostView(post, comments, likes, shares)
           case _ => throw new Exception("Get post view returned error") 
         }
       })
+    yield postsView
+
+  /*
+    Getting view for all user's posts if they exists
+    ErrorOr containing errors are filtered
+   */
+  def getPostsViews(): ErrorOr[List[PostView]] =
+    for
+      profile   <- getUserProfile()
+      posts     <- getPosts(profile.userId)
+      postsView <- ErrorOr(posts map {
+        post ⇒ getPostView(post) match {
+          case ErrorOr.Value(PostView(post, comments, likes, shares)) => PostView(post, comments, likes, shares)
+          case _ => null
+        }
+      } filter (post => post != null)
+      )
     yield postsView
 
   /* 
@@ -47,7 +65,7 @@ object program:
   /*
    Provide desugared version of the previous two methods
   */
-  def getPostsViewDesugared(): ErrorOr[List[PostView]] =
+  def getPostsViewsAndErrorsAreExtremelyImportantDesugared(): ErrorOr[List[PostView]] =
     getUserProfile() flatMap  { profile =>
       getPosts(profile.userId) map  {
         posts => posts map  {
@@ -55,13 +73,13 @@ object program:
             comments => getLikes(post.postId) flatMap {
               likes => getShares(post.postId) map {
                 shares => PostView(post, comments, likes, shares)
-              } 
+              }
             }
           } match {
             case ErrorOr.Value(PostView(post, comments, likes, shares)) => PostView(post, comments, likes, shares)
-            case _ => throw new Exception("Get post view returned error")   
+            case _ => throw new Exception("Get post view returned error")
           }
-        } 
+        }
       }
     }
 
