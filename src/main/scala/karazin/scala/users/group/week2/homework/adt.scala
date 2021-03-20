@@ -74,7 +74,6 @@ object adt:
       this match
         case ErrorOr.Value(v) => ev(v)
         case ErrorOr.Error(v)    => ErrorOr.Error(v)
-        case null                => ErrorOr.Error(new Exception("flatten failed to match object, it was null"))
     
     /* 
       The method is used for applying side effects without returning any result
@@ -94,8 +93,4 @@ object adt:
       no exception is thrown but the case for an error is returned
     */
     def apply[V](v: V)(implicit ev: V <:< Throwable = null) : ErrorOr[V] =
-//      Option(ev).fold[ErrorOr[V]](ErrorOr.Value(v))(_ => ErrorOr.Error(v))
-      Option(ev) match {
-        case Some(x) => ErrorOr.Value(v)
-        case None    => ErrorOr.Error(v)  
-      }
+      Option(ev).fold[ErrorOr[V]](ErrorOr.Value(v))(_ => ErrorOr.Error(v))
