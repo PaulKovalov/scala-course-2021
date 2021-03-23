@@ -44,8 +44,8 @@ object program:
       postsView <- ErrorOr(posts map {
         post ⇒ getPostView(post) match {
           case ErrorOr.Value(PostView(post, comments, likes, shares)) => Option(PostView(post, comments, likes, shares))
-          case _ => Option(None)
-        }
+          case _ => Option(null)
+        } 
       } flatten
       )
     yield postsView
