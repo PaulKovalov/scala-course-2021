@@ -3,6 +3,7 @@ package karazin.scala.users.group.week3.homework
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import services._
+import model._
 
 import java.util.UUID
 import karazin.scala.users.group.week3.homework.TestUtils._
@@ -26,11 +27,14 @@ class ServicesSuite extends munit.FunSuite:
 
   test("test getPosts returns success future") {
     Future {
-      val postsFuture = getPosts(userId=UUID.randomUUID())(ExecutionContext.global)
-      postsFuture map { posts => 
-        assertNotNull(posts)
+      val userId = UUID.randomUUID()
+      val postsFuture = getPosts(userId=userId)(ExecutionContext.global)
+      postsFuture map { posts =>
         posts foreach(post => {
-          assertNotNull(posts) 
+          post match {
+            case Post(userId, _) => assert(true)
+            case _ => fail("Actual userId was different from the expected") 
+          }
         })
       }
     }
@@ -38,11 +42,14 @@ class ServicesSuite extends munit.FunSuite:
   
   test("test getComments returns success future") {
     Future {
-      val commentsFuture = getComments(postId = UUID.randomUUID())(ExecutionContext.global)
+      val postId = UUID.randomUUID()
+      val commentsFuture = getComments(postId=postId)(ExecutionContext.global)
       commentsFuture map { comments =>
-        assertNotNull(comments)
         comments foreach(comment => {
-          assertNotNull(comment)
+          comment match {
+            case Comment(_, postId) => assert(true)
+            case _ => fail("Actual postId was different from the expected")  
+          }
         })
       }
     }
@@ -50,11 +57,14 @@ class ServicesSuite extends munit.FunSuite:
   
   test("test getLikes returns success future") {
     Future {
-      val likesFuture = getLikes(postId = UUID.randomUUID())(ExecutionContext.global)
-      likesFuture map { likes => 
-        assertNotNull(likes)
+      val postId = UUID.randomUUID()
+      val likesFuture = getLikes(postId=postId)(ExecutionContext.global)
+      likesFuture map { likes =>
         likes foreach(like => {
-          assertNotNull(like)
+          like match {
+            case Like(_, postId) => assert(true)
+            case _ => fail("Actual postId was different from the expected")
+          }
         })
       }
     }
@@ -62,11 +72,14 @@ class ServicesSuite extends munit.FunSuite:
 
   test("test getShares returns success future") {
     Future {
-      val sharesFuture = getShares(postId = UUID.randomUUID())(ExecutionContext.global)
+      val postId = UUID.randomUUID()
+      val sharesFuture = getShares(postId=postId)(ExecutionContext.global)
       sharesFuture map { shares =>
-        assertNotNull(shares)
-        shares foreach(like => {
-          assertNotNull(like)
+        shares foreach(share => {
+          share match {
+            case Share(_, postId) => assert(true)
+            case _ => fail("Actual postId was different from the expected")
+          }
         })
       }
     }
