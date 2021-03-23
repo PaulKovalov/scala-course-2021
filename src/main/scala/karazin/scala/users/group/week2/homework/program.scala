@@ -1,6 +1,5 @@
 package karazin.scala.users.group.week2.homework
-
-// Do not forget to import custom implementation
+import scala.language.postfixOps
 import adt._
 import model._
 import services._
@@ -29,7 +28,7 @@ object program:
       postsView <- ErrorOr(posts map {
         post ⇒ getPostView(post) match {
           case ErrorOr.Value(PostView(post, comments, likes, shares)) => PostView(post, comments, likes, shares)
-          case _ => throw new Exception("Get post view returned error") 
+          case _ => ErrorOr.Error(new Exception("Get post view returned error")) 
         }
       })
     yield postsView
@@ -44,10 +43,10 @@ object program:
       posts     <- getPosts(profile.userId)
       postsView <- ErrorOr(posts map {
         post ⇒ getPostView(post) match {
-          case ErrorOr.Value(PostView(post, comments, likes, shares)) => PostView(post, comments, likes, shares)
-          case _ => null
+          case ErrorOr.Value(PostView(post, comments, likes, shares)) => Option(PostView(post, comments, likes, shares))
+          case _ => Option(None)
         }
-      } filter (post => post != null)
+      } flatten
       )
     yield postsView
 
