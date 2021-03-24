@@ -41,12 +41,12 @@ object program:
     for
       profile   <- getUserProfile()
       posts     <- getPosts(profile.userId)
-      postsView <- ErrorOr(posts map {
+      postsView <- ErrorOr(posts flatMap {
         post ⇒ getPostView(post) match {
           case ErrorOr.Value(PostView(post, comments, likes, shares)) => Option(PostView(post, comments, likes, shares))
           case _ => None
         } 
-      } flatten
+      }
       )
     yield postsView
 
@@ -76,7 +76,7 @@ object program:
             }
           } match {
             case ErrorOr.Value(PostView(post, comments, likes, shares)) => PostView(post, comments, likes, shares)
-            case _ => throw new Exception("Get post view returned error")
+            case ErrorOr.Error(throwable) => throw throwable
           }
         }
       }
