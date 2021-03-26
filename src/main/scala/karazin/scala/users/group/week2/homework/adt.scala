@@ -1,5 +1,7 @@
 package karazin.scala.users.group.week2.homework
 
+import scala.util.control.NonFatal
+
 /* 
   Custom implementation of Option (Maybe monad in Haskell)
   Implemented via Scala 3 way for Algebraic Data Types (ADT)
@@ -13,8 +15,9 @@ object adt:
   
   enum ErrorOr[+V]:
     
-    // Added to make it compilable. Remove it.
-    case DummyCase
+    case Value(v: V)
+
+    case Error(v: Throwable)
     
     /* 
       Two case must be defined: 
@@ -28,8 +31,15 @@ object adt:
       
       Make sure that in case of failing the method with exception
       no exception is thrown but the case for an error is returned
-    */ 
-    def flatMap = ???
+    */
+    def flatMap[Q](f: V => ErrorOr[Q]): ErrorOr[Q] =
+      this match
+        case ErrorOr.Value(v) =>
+          try
+            f(v)
+          catch
+            case NonFatal(e) => ErrorOr.Error(e)
+        case ErrorOr.Error(e) => ErrorOr.Error(e)
 
     /* 
       The method is used for changing the internal object
@@ -38,7 +48,14 @@ object adt:
       Make sure that in case of failing the method with exception
       no exception is thrown but the case for an error is returned
      */
-    def map = ???
+    def map[Q](f: V => Q): ErrorOr[Q] =
+      this match
+        case ErrorOr.Value(v) =>
+          try
+            ErrorOr.Value(f(v))
+          catch
+            case NonFatal(e) => ErrorOr.Error(e)
+        case ErrorOr.Error(e) => ErrorOr.Error(e)
   
     /* 
       The method is used for filtering
@@ -47,19 +64,25 @@ object adt:
       Make sure that in case of failing the method with exception
       no exception is thrown but the case for an error is returned
      */
-    def withFilter = ???
+    def withFilter(p: V => Boolean): ErrorOr[V] = ???
   
     /* 
       The method is used for getting rid of internal box
       Provide a type parameter, an argument and a result type
     */
-    def flatten = ???
+    def flatten[U](implicit ev: V <:< ErrorOr[U]): ErrorOr[U] =
+      this match
+        case ErrorOr.Value(v) => ev(v)
+        case ErrorOr.Error(v)    => ErrorOr.Error(v)
     
     /* 
       The method is used for applying side effects without returning any result
       Provide a type parameter, an argument and a result type
     */
-    def foreach = ???
+    def foreach[U](f: V => U): Unit =
+      this match
+        case ErrorOr.Error(v)    => ()
+        case ErrorOr.Value(v)    => f(v)
       
   // Companion object to define constructor
   object ErrorOr:
@@ -69,6 +92,5 @@ object adt:
       Make sure that in case of failing the method with exception
       no exception is thrown but the case for an error is returned
     */
-    def apply = ???
-      
-  
+    def apply[V](v: V)(implicit ev: V <:< Throwable = null) : ErrorOr[V] =
+      Option(ev).fold[ErrorOr[V]](ErrorOr.Value(v))(_ => ErrorOr.Error(v))
