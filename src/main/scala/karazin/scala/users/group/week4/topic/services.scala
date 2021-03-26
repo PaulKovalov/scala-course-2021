@@ -21,7 +21,7 @@ object services:
     }
   
   def getPosts(userId: UUID): Future[List[Post]] =
-    Future.successful{
+    Future.successful {
       Post(userId = UUID.randomUUID(), postId = UUID.randomUUID()) :: Nil
     }
   
