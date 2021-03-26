@@ -50,10 +50,12 @@ object adt:
       this match
         case ErrorOr.Value(v) =>
           // here this value has type ErrorOr[ErrorOr[V]] so I need to unpack it
-          ErrorOr.fromTry(Try(f(v))) match {
+          // also possible to write ErrorOr.fromTry(f(v))
+          Try(f(v)).toErrorOr match {
             case ErrorOr.Value(v) => v
             case ErrorOr.Error(error) => ErrorOr.Error(error)
           }
+          
         case ErrorOr.Error(e) => ErrorOr.Error(e)
     /* 
       The method is used for changing the internal object
@@ -94,7 +96,7 @@ object adt:
       this match
         case ErrorOr.Error(v)    => ()
         case ErrorOr.Value(v)    => f(v)
-      
+  
   // Companion object to define constructor
   object ErrorOr:
     /* 
@@ -114,5 +116,11 @@ object adt:
       t match
         case Success(v) => ErrorOr.Value(v)
         case Failure(throwable) => ErrorOr.Error(throwable)
-      
-  
+
+  end ErrorOr
+
+  extension[V] (t: Try[V])
+    def toErrorOr: ErrorOr[V] =
+      t match
+        case Success(v) => ErrorOr.Value(v)
+        case Failure(throwable) => ErrorOr.Error(throwable)
