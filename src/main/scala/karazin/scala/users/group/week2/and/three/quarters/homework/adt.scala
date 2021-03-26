@@ -4,6 +4,25 @@ package karazin.scala.users.group.week2.and.three.quarters.homework
   Custom implementation of Option (Maybe monad in Haskell)
   Implemented via Scala 3 way for Algebraic Data Types (ADT)
   
+  Optional task:
+  In addition to 
+  ```
+    ErrorOr.fromTry(
+      Try {
+        bla-bla-bla
+      }
+    )
+  ```
+  Make 
+  ```
+    Try {
+      bla-bla-bla
+    }.toErrorOr
+  ```
+  also available.
+  NB: Don't forget about type parameters.
+
+  
   Resources:
   * https://en.wikipedia.org/wiki/Algebraic_data_type
   * https://docs.scala-lang.org/scala3/book/types-adts-gadts.html
