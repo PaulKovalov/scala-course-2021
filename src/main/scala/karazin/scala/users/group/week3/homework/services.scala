@@ -16,26 +16,26 @@ object services:
   
   def getPosts(userId: UUID)(ec: ExecutionContext): Future[List[Post]] =
     Future {
-      Post(userId = UUID.randomUUID(), postId = UUID.randomUUID()) :: Nil
+      Post(userId = userId, postId = UUID.randomUUID()) :: Nil
     }(ec)
   
   def getComments(postId: UUID)(ec: ExecutionContext): Future[List[Comment]] =
     Future {
       // Emulating time consumed operation
       Thread.sleep(5000)
-      Comment(userId = UUID.randomUUID(), postId = UUID.randomUUID()) :: Nil
+      Comment(userId = UUID.randomUUID(), postId = postId) :: Nil
     }(ec)
   
   def getLikes(postId: UUID)(ec: ExecutionContext): Future[List[Like]] = 
     Future {
       // Emulating time consumed operation
       Thread.sleep(2000)
-      Like(userId = UUID.randomUUID(), postId = UUID.randomUUID()) :: Nil
+      Like(userId = UUID.randomUUID(), postId = postId) :: Nil
     }(ec)
   
   def getShares(postId: UUID)(ec: ExecutionContext): Future[List[Share]] = 
     Future {
       // Emulating time consumed operation
       Thread.sleep(500)
-      Share(userId = UUID.randomUUID(), postId = UUID.randomUUID()) :: Nil
+      Share(userId = UUID.randomUUID(), postId = postId) :: Nil
     }(ec)

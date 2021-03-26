@@ -21,7 +21,12 @@ class ServicesSuite extends munit.FunSuite:
   test("getUserProfile returns success future") {
     Future {
       val profileFuture = getUserProfile(ExecutionContext.global)
-      profileFuture map { profile => assertNotNull(profile)}
+      profileFuture map { profile => 
+        profile match {
+          case UserProfile(_) => assert(true)
+          case null => fail("getUserProfile returned null")
+        }
+      }
     }
   }
 
@@ -32,8 +37,8 @@ class ServicesSuite extends munit.FunSuite:
       postsFuture map { posts =>
         posts foreach(post => {
           post match {
-            case Post(userId, _) => assert(true)
-            case null => fail("Actual userId was different from the expected") 
+            case Post(`userId`, _) => assert(true)
+            case _ => fail(s"Actual userId was different from the ${userId}") 
           }
         })
       }
@@ -47,8 +52,8 @@ class ServicesSuite extends munit.FunSuite:
       commentsFuture map { comments =>
         comments foreach(comment => {
           comment match {
-            case Comment(_, postId) => assert(true)
-            case null => fail("Actual postId was different from the expected")  
+            case Comment(_, `postId`) => assert(true)
+            case _ => fail("Actual postId was different from the expected")  
           }
         })
       }
@@ -62,8 +67,8 @@ class ServicesSuite extends munit.FunSuite:
       likesFuture map { likes =>
         likes foreach(like => {
           like match {
-            case Like(_, postId) => assert(true)
-            case null => fail("Actual postId was different from the expected")
+            case Like(_, `postId`) => assert(true)
+            case _ => fail("Actual postId was different from the expected")
           }
         })
       }
@@ -77,8 +82,8 @@ class ServicesSuite extends munit.FunSuite:
       sharesFuture map { shares =>
         shares foreach(share => {
           share match {
-            case Share(_, postId) => assert(true)
-            case null => fail("Actual postId was different from the expected")
+            case Share(_, `postId`) => assert(true)
+            case _ => fail("Actual postId was different from the expected")
           }
         })
       }
