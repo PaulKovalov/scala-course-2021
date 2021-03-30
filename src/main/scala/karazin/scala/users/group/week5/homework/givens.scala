@@ -6,14 +6,26 @@ object givens:
     The trait is used for converting instances to a json string representation
     Provide a type parameter(s) for the trait and the method 
     and argument(s) and a result type
-  */ 
+  */
   
-  trait DummyType
+  trait JsonEncoder[T]:
+    def encode(value: T): String
   
-  trait JsonStringEncoder:
-    def encode: DummyType
-
-  /* 
-    Make sure that integers, booleans, strings and lists 
-    are convertable to a json string representation 
-  */ 
+  given JsonStringEncoder: JsonEncoder[String] with
+    def encode(v: String): String = "\"" + v + "\""
+  
+  given JsonIntEncoder: JsonEncoder[Int] with
+    def encode(v: Int): String = v.toString
+  
+  given JsonBooleanEncoder: JsonEncoder[Boolean] with
+    def encode(v: Boolean): String =
+      v match
+        case true  => "true"
+        case false => "false"
+  
+  given JsonListEncoder[T](using encoder: JsonEncoder[T]): JsonEncoder[List[T]] with
+    def encode(l: List[T]): String =
+      def appender(result: String, v: T): String =
+        result + encoder.encode(v) + ","
+      l.foldLeft("[")(appender).dropRight(1) + "]"
+      
