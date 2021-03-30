@@ -38,7 +38,7 @@ class ServicesSuite extends munit.FunSuite:
         posts foreach(post => {
           post match {
             case Post(`userId`, _) => assert(true)
-            case _ => fail(s"Actual userId was different from the ${userId}") 
+            case Post(differentUserId, _) => fail(s"Expected to get $userId, got $differentUserId instead") 
           }
         })
       }
@@ -53,7 +53,7 @@ class ServicesSuite extends munit.FunSuite:
         comments foreach(comment => {
           comment match {
             case Comment(_, `postId`) => assert(true)
-            case _ => fail("Actual postId was different from the expected")  
+            case Comment(_, differentPostId) => fail(s"Expected to get $postId, got $differentPostId instead")  
           }
         })
       }
@@ -68,7 +68,7 @@ class ServicesSuite extends munit.FunSuite:
         likes foreach(like => {
           like match {
             case Like(_, `postId`) => assert(true)
-            case _ => fail("Actual postId was different from the expected")
+            case Like(_, differentPostId) => fail(s"Expected to get $postId, got $differentPostId instead")
           }
         })
       }
@@ -83,7 +83,7 @@ class ServicesSuite extends munit.FunSuite:
         shares foreach(share => {
           share match {
             case Share(_, `postId`) => assert(true)
-            case _ => fail("Actual postId was different from the expected")
+            case Share(_, differentPostId) => fail(s"Expected to get $postId, got $differentPostId instead")
           }
         })
       }

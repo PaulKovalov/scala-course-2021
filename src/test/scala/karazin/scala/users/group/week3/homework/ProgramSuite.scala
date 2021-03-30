@@ -26,7 +26,8 @@ class ProgramSuite extends munit.FunSuite:
       postViewFuture map { postView =>
         postView match {
           case PostView(Post(`userId`, `postId`),_,_,_) => assert(true)
-          case _ => fail(s"Values of userId or postId were not equal to ${userId} and ${postId}")
+          case PostView(Post(differentUserId, differentPostId), _, _, _) => 
+            fail(s"Expected userId and postId to be $userId and $postId, got $differentUserId and $differentPostId instead")
         } 
       }
     }
