@@ -29,24 +29,17 @@ class ProgramSuite extends munit.FunSuite:
     executionContext.shutdown
 
   test("test getPostView works") {
-    Future {
-      val postId = UUID.randomUUID()
-      val post: Post = Post(UUID.randomUUID(), postId)
-      val postView = getPostView(post)
-      postView match {
-        case PostView(Post(_, `postId`), _, _, _) => assert(true)
-        case PostView(Post(_, differentPostId), _, _, _) => fail(s"Actual post id was $differentPostId, expected $postId")  
-      }
+    val postId = UUID.randomUUID()
+    getPostView(Post(UUID.randomUUID(), postId)) map {
+      case PostView(Post(_, `postId`), _, _, _) => assert(true)
+      case PostView(Post(_, differentPostId), _, _, _) => fail(s"Actual post id was $differentPostId, expected $postId")
     }
   }
-  
+
   test("test getPostsViews works") {
-    Future {
-      val listOfPostsFuture = getPostsViews()
-      listOfPostsFuture onComplete {
-        case Success(listOfPosts) => assert(true)
-        case Failure(exception)   => fail(exception.getMessage)
-      }
+    getPostsViews() onComplete {
+      case Success(_) => assert(true)
+      case Failure(exception) => fail(exception.getMessage)
     }
   }
 

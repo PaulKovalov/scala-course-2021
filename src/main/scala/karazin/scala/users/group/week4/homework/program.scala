@@ -13,7 +13,7 @@ package karazin.scala.users.group.week4.homework
 import java.util.UUID
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutorService, Future}
 // or I can declare implicit vals in methods that require the execution context
-import scala.concurrent.ExecutionContext.Implicits.global;
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Success
 import scala.util.Failure
 import karazin.scala.users.group.week4.homework.model._
@@ -44,7 +44,7 @@ object program:
       ExecutionContext.fromExecutorService(Executors.newSingleThreadExecutor)
     
     val getCommentsService  = getComments(post.postId) // uses implicit global execution context
-    val getLikesService     = getLikes(post.postId)(singleThreadPoolContext) // uses explicit context
+    val getLikesService     = getLikes(post.postId)(using singleThreadPoolContext) // uses explicit context
     val getSharesService    = getShares(post.postId) // uses implicit global execution context
     
     for
