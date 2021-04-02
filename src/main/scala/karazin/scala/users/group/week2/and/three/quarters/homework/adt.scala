@@ -2,6 +2,7 @@ package karazin.scala.users.group.week2.and.three.quarters.homework
 
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
+import scala.language.postfixOps
 
 /* 
   Custom implementation of Option (Maybe monad in Haskell)
@@ -51,11 +52,7 @@ object adt:
         case ErrorOr.Value(v) =>
           // here this value has type ErrorOr[ErrorOr[V]] so I need to unpack it
           // also possible to write ErrorOr.fromTry(f(v))
-          Try(f(v)).toErrorOr match {
-            case ErrorOr.Value(v) => v
-            case ErrorOr.Error(error) => ErrorOr.Error(error)
-          }
-          
+          Try(f(v)).toErrorOr flatten
         case ErrorOr.Error(e) => ErrorOr.Error(e)
     /* 
       The method is used for changing the internal object
