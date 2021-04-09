@@ -1,5 +1,9 @@
 package karazin.scala.users.group.week2.and.three.quarters.homework
 
+import scala.util.control.NonFatal
+import scala.util.{Failure, Success, Try}
+import scala.language.postfixOps
+
 /* 
   Custom implementation of Option (Maybe monad in Haskell)
   Implemented via Scala 3 way for Algebraic Data Types (ADT)
@@ -32,14 +36,9 @@ object adt:
   
   enum ErrorOr[+V]:
     
-    // Added to make it compilable. Remove it.
-    case DummyCase
+    case Value(v: V)
     
-    /* 
-      Two case must be defined: 
-      * a case for a regular value
-      * a case for an error (it should contain an actual throwable)
-     */
+    case Error(v: Throwable)
   
     /* 
       The method is used for defining execution pipelines
@@ -48,8 +47,13 @@ object adt:
       Make sure that in case of failing the method with exception
       no exception is thrown but the case for an error is returned
     */ 
-    def flatMap = ???
-
+    def flatMap[Q](f: V => ErrorOr[Q]): ErrorOr[Q] = 
+      this match
+        case ErrorOr.Value(v) =>
+          // here this value has type ErrorOr[ErrorOr[V]] so I need to unpack it
+          // also possible to write ErrorOr.fromTry(f(v))
+          Try(f(v)).toErrorOr flatten
+        case ErrorOr.Error(e) => ErrorOr.Error(e)
     /* 
       The method is used for changing the internal object
       Provide a type parameter, an argument and a result type
@@ -57,7 +61,11 @@ object adt:
       Make sure that in case of failing the method with exception
       no exception is thrown but the case for an error is returned
      */
-    def map = ???
+    def map[Q](f: V => Q): ErrorOr[Q] =
+      this match
+        case ErrorOr.Value(v) =>
+          ErrorOr.fromTry(Try(f(v)))
+        case ErrorOr.Error(e) => ErrorOr.Error(e)
   
     /* 
       The method is used for filtering
@@ -66,20 +74,26 @@ object adt:
       Make sure that in case of failing the method with exception
       no exception is thrown but the case for an error is returned
      */
-    def withFilter = ???
+    def withFilter(p: V => Boolean): ErrorOr[V] = ???
   
     /* 
       The method is used for getting rid of internal box
       Provide a type parameter, an argument and a result type
     */
-    def flatten = ???
+    def flatten[U](implicit ev: V <:< ErrorOr[U]): ErrorOr[U] =
+      this match
+        case ErrorOr.Value(v) => ev(v)
+        case ErrorOr.Error(v)    => ErrorOr.Error(v)
     
     /* 
       The method is used for applying side effects without returning any result
       Provide a type parameter, an argument and a result type
     */
-    def foreach = ???
-      
+    def foreach[U](f: V => U): Unit =
+      this match
+        case ErrorOr.Error(v)    => ()
+        case ErrorOr.Value(v)    => f(v)
+  
   // Companion object to define constructor
   object ErrorOr:
     /* 
@@ -88,12 +102,22 @@ object adt:
       Make sure that in case of failing the method with exception
       no exception is thrown but the case for an error is returned
     */
-    def apply = ???
-
+    def apply[V](v: V)(implicit ev: V <:< Throwable = null) : ErrorOr[V] =
+      Option(ev).fold[ErrorOr[V]](ErrorOr.Value(v))(_ => ErrorOr.Error(v))
+    
     /*
-      The method is used for creating `ErroOr` instance from `Try`
+      The method is used for creating `ErrorOr` instance from `Try`
       Provide a type parameter, an argument and a result type
     */
-    def fromTry = ???
-      
-  
+    def fromTry[V](t: Try[V]): ErrorOr[V] =
+      t match
+        case Success(v) => ErrorOr.Value(v)
+        case Failure(throwable) => ErrorOr.Error(throwable)
+
+  end ErrorOr
+
+  extension[V] (t: Try[V])
+    def toErrorOr: ErrorOr[V] =
+      t match
+        case Success(v) => ErrorOr.Value(v)
+        case Failure(throwable) => ErrorOr.Error(throwable)
