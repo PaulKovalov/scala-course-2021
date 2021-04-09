@@ -31,7 +31,7 @@ object services:
     Future {
       Post(userId = userId, postId = UUID.randomUUID()) :: Nil
     }
-  
+
   def getComments(postId: UUID)(using ec: ExecutionContext): Future[List[Comment]] = 
     Future {
       // Emulating time consumed operation

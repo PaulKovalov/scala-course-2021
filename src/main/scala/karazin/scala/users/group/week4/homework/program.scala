@@ -28,13 +28,12 @@ object program:
     for
       profile   <- getUserProfile()
       posts     <- getPosts(profile.userId)
-      postsView <- Future(posts flatMap {
+      postsView = posts flatMap {
         post ⇒ getPostView(post) match {
           case PostView(post, comments, likes, shares) => Option(PostView(post, comments, likes, shares))
           case _ => None
         }
       }
-     )
     yield postsView
       
 

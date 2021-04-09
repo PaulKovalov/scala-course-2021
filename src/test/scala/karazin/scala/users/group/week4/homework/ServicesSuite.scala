@@ -20,13 +20,9 @@ import scala.util.{Failure, Success}
  */
 
 class ServicesSuite extends munit.FunSuite:
-  var executionContext: ExecutionContextExecutorService = null
-
-  override def beforeEach(context: BeforeEach): Unit =
-    executionContext = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(2))
-
-  override def afterEach(context: AfterEach): Unit =
-    executionContext.shutdown
+  
+  private def checkList[V](list: List[V])(f: V => Unit) =
+    list foreach f
 
   test("test getUserProfile returns UserProfile") {
     getUserProfile() onComplete {
@@ -38,7 +34,7 @@ class ServicesSuite extends munit.FunSuite:
   test("test getPosts returns success future") {
     val userId = UUID.randomUUID()
     getPosts(userId) map { posts =>
-      posts foreach {
+      checkList[Post](posts) {
         case Post(`userId`, _) => assert(true)
         case Post(differentUserId, _) => fail(s"Actual userId was $differentUserId but expected $userId")
       }
@@ -50,7 +46,7 @@ class ServicesSuite extends munit.FunSuite:
   test("test getComments returns success future") {
     val postId = UUID.randomUUID()
     getComments(postId) map { comments =>
-      comments foreach {
+      checkList[Comment](comments) {
         case Comment(_, `postId`) => assert(true)
         case Comment(_, differentPostId) => fail(s"Actual postId was $differentPostId but expected $postId")
       }
@@ -62,7 +58,7 @@ class ServicesSuite extends munit.FunSuite:
   test("test getLikes returns success future") {
     val postId = UUID.randomUUID()
     getLikes(postId) map { likes =>
-      likes foreach {
+      checkList[Like](likes) {
         case Like(_, `postId`) => assert(true)
         case Like(_, differentPostId) => fail(s"Actual postId was $differentPostId but expected $postId")
       }
@@ -74,7 +70,7 @@ class ServicesSuite extends munit.FunSuite:
   test("test getShares returns success future") {
     val postId = UUID.randomUUID()
     getShares(postId) map { shares =>
-      shares foreach {
+      checkList[Share](shares) {
         case Share(_, `postId`) => assert(true)
         case Share(_, differentPostId) => fail(s"Actual postId was $differentPostId but expected $postId")
       }
@@ -82,5 +78,3 @@ class ServicesSuite extends munit.FunSuite:
       case error => fail(error.getMessage)
     }
   }
-
-  

@@ -20,19 +20,28 @@ import scala.util.{Failure, Success}
  */
 
 class ProgramSuite extends munit.FunSuite:
-  var executionContext: ExecutionContextExecutorService = null
-
-  override def beforeEach(context: BeforeEach): Unit =
-    executionContext = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(2))
-
-  override def afterEach(context: AfterEach): Unit =
-    executionContext.shutdown
+  
+  private def checkList[V](list: List[V])(f: V => Unit) =
+    list foreach f
 
   test("test getPostView works") {
     val postId = UUID.randomUUID()
     getPostView(Post(UUID.randomUUID(), postId)) map {
-      case PostView(Post(_, `postId`), _, _, _) => assert(true)
-      case PostView(Post(_, differentPostId), _, _, _) => fail(s"Actual post id was $differentPostId, expected $postId")
+      case PostView(Post(_, `postId`), comments, likes, shares) => {
+        checkList[Comment](comments) {
+          case Comment(_, `postId`)        => assert(true)
+          case Comment(_, differentPostId) => fail(s"Comment object expected to have $postId, had $differentPostId instead")
+        }
+        checkList[Like](likes) {
+          case Like(_, `postId`)        => assert(true)
+          case Like(_, differentPostId) => fail(s"Like object expected to have $postId, had $differentPostId instead")
+        }
+        checkList[Share](shares) {
+          case Share(_, `postId`)        => assert(true)
+          case Share(_, differentPostId) => fail(s"Share object expected to have $postId, had $differentPostId instead")
+        }
+      }
+      case PostView(Post(_, differentPostId), _, _, _) => fail(s"PostView had different Post. Actual post id was $differentPostId, expected $postId")
     }
   }
 
