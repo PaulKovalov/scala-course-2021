@@ -25,7 +25,8 @@ object givens:
   
   given JsonListEncoder[T](using encoder: JsonEncoder[T]): JsonEncoder[List[T]] with
     def encode(l: List[T]): String =
-      def appender(result: String, v: T): String =
-        result + encoder.encode(v) + ","
-      l.foldLeft("[")(appender).dropRight(1) + "]"
+      l match
+        case Nil => "[]"
+        case _ => l.foldLeft("[")
+          ((result: String, v: T) => {result + encoder.encode(v) + ","}).dropRight(1) + "]"
       
