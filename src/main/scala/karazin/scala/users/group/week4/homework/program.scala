@@ -2,7 +2,7 @@
 
 Task:
   • fix the code to make it compilable
-  • use at least to execution contexts:
+  • use at least 2 execution contexts:
     • one for a `for comprehension`
     • at least one for `getComments`, `getLikes`, `getShares`
   • write tests
