@@ -3,10 +3,9 @@ import sbt._
 object Dependencies {
   
   object Version {
-    val `scala3-compiler`             = "3.0.0-RC2"
-    val cats                          = "2.5.0"
-    val `cats-effect`                 = "3.0.2"
-    val munit                         = "0.7.23"
+    val cats          = "2.6.0"
+    val `cats-effect` = "3.1.0"
+    val munit         = "0.7.25"
   }
 
   lazy val cats: Seq[ModuleID] = Seq(
