@@ -34,10 +34,7 @@ object givens:
 
   given JsonListEncoder[T](using encoder: JsonEncoder[T]): JsonEncoder[List[T]] with
     def encode(l: List[T]): String =
-      l match
-        case Nil => "[]"
-        case _ => l.foldLeft("[")
-          ((result: String, v: T) => {result + encoder.encode(v) + ","}).dropRight(1) + "]"
+      "[" + l.foldLeft(List())((result: List[String], v: T) => {result :+ encoder.encode(v)}).mkString(",") + "]"
     
     extension(l: List[T])
         def toJsonString: String = encode(l)
@@ -50,3 +47,7 @@ object givens:
 
     extension (m: Map[String, T])
       def toJsonString: String = encode(m)
+
+  // companion object for "apply" method
+  object JsonEncoder:
+    def apply[T](using j: JsonEncoder[T]) = j
