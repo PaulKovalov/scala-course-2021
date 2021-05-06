@@ -1,5 +1,5 @@
 package karazin.scala.users.group.week8.homework
-
+import scala.language.postfixOps
 /*
   Provide implementation for Monad trait and provide
   a monad instance for ErrorOr trait from HW2¾
@@ -31,14 +31,30 @@ object monads:
       def flatMap(f: A => List[B]): List[B] =
         x.flatMap(f)
   
-  given integerListMonad: Monad[List[Int]] with
-    
-  given SimpleValueMonad: Monad[ErrorOr] with
+  type EV = [X] =>> ErrorOr[X]
+  type EL = [X] =>> ErrorOr[List[X]]
+  
+  given SimpleValueMonad: Monad[EV] with
     def apply[A](x: A): ErrorOr[A] =
       ErrorOr.apply(x)
 
     extension [A, B](x: ErrorOr[A])  
       def flatMap(f: A => ErrorOr[B]): ErrorOr[B] =
         x.flatMap(f)
+        
+  given ListValueMonad: Monad[EL] with
+    def apply[A](x: A): ErrorOr[List[A]] =
+      ErrorOr.apply(x :: Nil)
+    
+    extension [A, B](x: ErrorOr[List[A]])
+      def flatMap(f: A => ErrorOr[List[B]]): ErrorOr[List[B]] =
+        x map { (listOfA: List[A]) =>
+          listOfA flatMap { (a: A) =>
+            f(a) match {
+              case ErrorOr.Value(listOfB) => listOfB
+              case _ => None
+            }
+          }
+        }
 
 end monads
