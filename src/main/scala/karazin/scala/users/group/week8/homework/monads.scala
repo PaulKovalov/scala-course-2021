@@ -15,33 +15,8 @@ package karazin.scala.users.group.week8.homework
 import karazin.scala.users.group.week2.and.three.quarters.homework.adt._
 
 object monads:
+  
 
-//  trait Monad[F[_]]:
-//    def apply[A](x: A): F[A]
-//    
-//    extension [A, B](x: F[A])
-//      def flatMap(f: A => F[B]): F[B]
-//
-//  end Monad
-//  
-//  given listMonad[A]: Monad[List] with
-//    def apply[A](x: A): List[A] =
-//      List(x)
-//
-//    extension [A, B](x: List[A])
-//      def flatMap(f: A => List[B]): List[B] =
-//        x.flatMap(f)
-//
-//
-//  given Monad[ErrorOr] with
-//    def apply[A](x: A): ErrorOr[A] =
-//      ErrorOr.apply(x)
-//    extension [A, B](x: ErrorOr[A])  
-//      def flatMap(f: A => ErrorOr[B]): ErrorOr[B] =
-//        x.flatMap(f)
-//  
-//  given Monad[ErrorOr[F[_]]] with
-//    def apply[A](x: A): ErrorOr[F[A]] = ???
   trait Monad[F[_]]:
 
     /** The unit value for a monad */
