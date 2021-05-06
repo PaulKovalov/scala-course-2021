@@ -22,7 +22,7 @@ object monads:
     extension [A, B](x: F[A])
       def flatMap(f: A => F[B]): F[B]
 
-  
+
   given listMonad: Monad[List] with
     def apply[A](x: A): List[A] =
       List(x)
@@ -30,22 +30,22 @@ object monads:
     extension [A, B](x: List[A])
       def flatMap(f: A => List[B]): List[B] =
         x.flatMap(f)
-  
+
   type EV = [X] =>> ErrorOr[X]
   type EL = [X] =>> ErrorOr[List[X]]
-  
+
   given SimpleValueMonad: Monad[EV] with
     def apply[A](x: A): ErrorOr[A] =
       ErrorOr.apply(x)
 
-    extension [A, B](x: ErrorOr[A])  
+    extension [A, B](x: ErrorOr[A])
       def flatMap(f: A => ErrorOr[B]): ErrorOr[B] =
         x.flatMap(f)
-        
+
   given ListValueMonad: Monad[EL] with
     def apply[A](x: A): ErrorOr[List[A]] =
       ErrorOr.apply(x :: Nil)
-    
+
     extension [A, B](x: ErrorOr[List[A]])
       def flatMap(f: A => ErrorOr[List[B]]): ErrorOr[List[B]] =
         x map { (listOfA: List[A]) =>
