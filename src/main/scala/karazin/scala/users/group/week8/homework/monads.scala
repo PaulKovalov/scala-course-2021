@@ -28,12 +28,4 @@ object monads:
 
   end Monad
 
-  given listMonad[A]: Monad[List] with
-    def pure[A](x: A): List[A] =
-      List(x)
-    extension [A, B](xs: List[A])
-      def flatMap(f: A => List[B]): List[B] =
-        xs.flatMap(f) // rely on the existing `flatMap` method of `List`
-
-
 end monads
