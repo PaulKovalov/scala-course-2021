@@ -8,12 +8,10 @@ import cats.Functor
 object functors:
 
   /*
-
     Implement combined functor which and calculates   with
       * sum of elements
       * product of
     over Future[List[Try[Option[Int]]]]
-
    */
   ???
 
