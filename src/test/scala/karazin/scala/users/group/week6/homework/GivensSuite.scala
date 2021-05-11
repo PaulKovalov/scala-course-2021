@@ -1,6 +1,9 @@
 package karazin.scala.users.group.week6.homework
 
 import scala.concurrent.Future
+import karazin.scala.users.group.week6.homework.givens.{given}
+import munit.ScalaCheckSuite
+import org.scalacheck.Prop._
 
 /*
   Write test for all programs in karazin.scala.users.group.week4.homework.givens
@@ -24,8 +27,49 @@ import scala.concurrent.Future
   NB: Do not use sync, this homework does not belong async stuff
     
  */
-class GivensSuite extends munit.FunSuite:
+class GivensSuite extends ScalaCheckSuite:
+
+  test("json encoder for Map works") {
+    val map = Map("one" -> 1, "two" -> 2, "three" -> 3)
+    assertEquals(map.toJsonString, "{\"one\":1,\"two\":2,\"three\":3}")
+  }
   
-  test("successful test example") {
-    assertEquals(42, 42)
+  test("json encoder for nested Map works") {
+    val nestedMap = Map("first" -> Map("one" -> 1, "two" -> 2, "three" -> 3), 
+      "second" -> Map("four" -> 4, "five" -> 5, "six" -> 6))
+    assertEquals(nestedMap.toJsonString, "{\"first\":{\"one\":1,\"two\":2,\"three\":3},\"second\":{\"four\":4,\"five\":5,\"six\":6}}")
+  }
+
+  test("json encoder for empty Map works") {
+    val emptyMap: Map[String, Int] = Map()
+    assertEquals(emptyMap.toJsonString, "{}")
+  }
+
+  property ("json encoder for integer works") {
+    forAll {(i: Int) => 
+      assertEquals(i.toJsonString, i.toString)
+    }
+  }
+  
+  property("json encoder for string works") {
+    forAll {(s: String) =>
+      assertEquals(s.toJsonString, "\"" + s + "\"")
+    }
+  }
+  
+  property("json encoder for boolean works") {
+    forAll {(b: Boolean) =>
+      b match {
+        case true => assertEquals(b.toJsonString, "true")
+        case false => assertEquals(b.toJsonString, "false")
+      }
+    }
+  }
+
+  property("json encoder for lists works") {
+    forAll {(l: List[Int]) =>
+      // well, I didn't know about this method when I was writing the implementation
+      // of the toJsonString for list xD
+      assertEquals(l.toJsonString, l.mkString("[", ",", "]"))
+    }
   }
