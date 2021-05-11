@@ -40,6 +40,11 @@ class GivensSuite extends ScalaCheckSuite:
     assertEquals(nestedMap.toJsonString, "{\"first\":{\"one\":1,\"two\":2,\"three\":3},\"second\":{\"four\":4,\"five\":5,\"six\":6}}")
   }
 
+  test("json encoder for empty Map works") {
+    val emptyMap: Map[String, Int] = Map()
+    assertEquals(emptyMap.toJsonString, "{}")
+  }
+
   property ("json encoder for integer works") {
     forAll {(i: Int) => 
       assertEquals(i.toJsonString, i.toString)

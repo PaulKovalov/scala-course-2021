@@ -37,9 +37,13 @@ object givens:
 
   given JsonMapEncoder[T](using tEncoder: JsonEncoder[T]): JsonEncoder[Map[String, T]] with
     def encode (m: Map[String, T]): String =
-      m.foldLeft[String]("{")((result: String, entry: (String, T)) => {
-        result + JsonStringEncoder.encode(entry._1) + ":" + tEncoder.encode(entry._2) + ","
-      }).dropRight(1) + "}"
+      if (m.isEmpty) {
+        "{}"
+      } else {
+        m.foldLeft[String]("{")((result: String, entry: (String, T)) => {
+          result + JsonStringEncoder.encode(entry._1) + ":" + tEncoder.encode(entry._2) + ","
+        }).dropRight(1) + "}"
+      }
 
 
   // companion object for "apply" method
