@@ -11,33 +11,29 @@ object givens:
   trait JsonEncoder[T]:
     def encode(value: T): String
 
+    extension (v: T)
+      def toJsonString: String = encode(v)
+
+
   given JsonStringEncoder: JsonEncoder[String] with
     def encode(v: String): String = "\"" + v + "\""
     
-    extension (s: String)
-      def toJsonString: String = encode(s)
 
   given JsonIntEncoder: JsonEncoder[Int] with
     def encode(v: Int): String = v.toString
-    
-    extension (i: Int)
-      def toJsonString: String = encode(i)
+
 
   given JsonBooleanEncoder: JsonEncoder[Boolean] with
     def encode(v: Boolean): String =
       v match
         case true  => "true"
         case false => "false"
-    
-    extension (b: Boolean)
-      def toJsonString: String = encode(b)
+
 
   given JsonListEncoder[T](using encoder: JsonEncoder[T]): JsonEncoder[List[T]] with
     def encode(l: List[T]): String =
       "[" + l.foldLeft(List())((result: List[String], v: T) => {result :+ encoder.encode(v)}).mkString(",") + "]"
     
-    extension(l: List[T])
-        def toJsonString: String = encode(l)
 
   given JsonMapEncoder[T](using tEncoder: JsonEncoder[T]): JsonEncoder[Map[String, T]] with
     def encode (m: Map[String, T]): String =
@@ -45,8 +41,6 @@ object givens:
         result + JsonStringEncoder.encode(entry._1) + ":" + tEncoder.encode(entry._2) + ","
       }).dropRight(1) + "}"
 
-    extension (m: Map[String, T])
-      def toJsonString: String = encode(m)
 
   // companion object for "apply" method
   object JsonEncoder:

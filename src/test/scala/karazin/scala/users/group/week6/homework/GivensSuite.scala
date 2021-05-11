@@ -65,6 +65,6 @@ class GivensSuite extends ScalaCheckSuite:
     forAll {(l: List[Int]) =>
       // well, I didn't know about this method when I was writing the implementation
       // of the toJsonString for list xD
-      assertEquals(l.toJsonString, "[" + l.mkString(",") + "]")
+      assertEquals(l.toJsonString, l.mkString("[", ",", "]"))
     }
   }
