@@ -2,7 +2,7 @@ package karazin.scala.users.group.week9.homework
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
-import concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import cats.Functor
 
@@ -16,43 +16,42 @@ object functors extends App:
    */
   type LTOI = List[Try[Option[Int]]]
 
-  def sum(v: Future[LTOI]): Future[Int] = {
+  private def listOp(v: Future[LTOI], op: (Int, Int) => Int, reduce: (Int, Int) => Int, neutral: Int): Future[Int] = {
 
-    def addToList(elToAdd: Try[Option[Int]], l: LTOI): LTOI =
+    def applyOp(elToAdd: Try[Option[Int]], l: LTOI): LTOI =
       elToAdd match
-        case Success(Some(v)) => Functor[List].compose[Try].compose[Option].map(l)(x => x + v)
+        case Success(Some(v)) => Functor[List].compose[Try].compose[Option].map(l)(x => op(x, v))
         case _ => throw Exception("Ba bah")
 
-    def sumList(l: LTOI, initialList: LTOI): LTOI =
+    def foldList(l: LTOI, initialList: LTOI): LTOI =
       l match {
         case Nil => initialList
         case head :: tail => {
-          val addedList = sumList(tail, initialList)
-          addToList(head, addedList)
+          val addedList = foldList(tail, initialList)
+          applyOp(head, addedList)
         }
       }
     v map { l =>
-      sumList(l, l).lift(0) match {
+      foldList(l, l).lift(0) match {
         case Some(Success(Some(v))) => {
           l.lift(0) match {
-            case Some(Success(Some(v2))) => v - v2
-            case _ => 0
+            case Some(Success(Some(v2))) => reduce(v, v2)
+            case _ => neutral
           }
         }
-        case _ => 0
+        case _ => neutral
       }
     }
   }
-  // for each element in the list, add it to all remaining elements in the list
 
-//    Functor[Future].compose[List].compose[Try].compose[Option].map(v) { (x: Int) =>
-//      r + x
-//    }
+  def sum(l: Future[LTOI]): Future[Int] =
+    listOp(l, (x, y) => x + y, (x, y) => x - y, 0)
 
-//  def product(v: Future[List[Try[Option[Int]]]]) = ???
-  val l = Future.successful(Try(Some(1)) :: Try(Some(2)) :: Try(Some(3)) :: Try(Some(4)) :: Nil)
-  sum(l) foreach { v =>
-    println(v)
-  }
+  def mul(l: Future[LTOI]): Future[Int] =
+    listOp(l, (x, y) => x * y, (x, y) => {
+      x / (y match {
+        case 0 => 1
+        case _ => y
+      })}, 1)
 
 end functors
