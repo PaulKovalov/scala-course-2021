@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import cats.Functor
 
-object functors extends App:
+object functors:
 
   /*
     Implement combined functor which and calculates   with
@@ -21,7 +21,7 @@ object functors extends App:
     def applyOp(elToAdd: Try[Option[Int]], l: LTOI): LTOI =
       elToAdd match
         case Success(Some(v)) => Functor[List].compose[Try].compose[Option].map(l)(x => op(x, v))
-        case _ => throw Exception("Ba bah")
+        case _ => throw Exception("Future failed or Option had None")
 
     def foldList(l: LTOI, initialList: LTOI): LTOI =
       l match {
