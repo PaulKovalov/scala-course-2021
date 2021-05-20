@@ -3,7 +3,7 @@ import cats.Applicative
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object program extends App:
+object program:
 
   /*
     Provide a meaningful example of Applicative usage.
