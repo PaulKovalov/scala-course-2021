@@ -23,8 +23,8 @@ class PolymorphicFunctionsSuite extends ScalaCheckSuite:
         `I₍₂,₄₎⁴`(unknown1)(unknown2)(unknown3)(unknown4) == (unknown2, unknown4)
      */
 
-    forAll { (unknown1: Unknown, unknown2: Unknown, unknown3: Unknown, unknown4: Unknown) =>
-      unknown1 == unknown2
+    forAll { (a: Int, b: String, c: Boolean, d: Float) =>
+      `I₍₂,₄₎⁴`(a)(b)(c)(d) == (b, d)
     }
 
   }
@@ -38,8 +38,9 @@ class PolymorphicFunctionsSuite extends ScalaCheckSuite:
         `(f ० g ० h ० i)(x)`(unknown1)(unknown2)(unknown3)(unknown4)(unknown4) == ???
      */
 
-    forAll { (unknown1: Unknown ⇒ Unknown, unknown2: Unknown ⇒ Unknown, unknown3: Unknown ⇒ Unknown, unknown4: Unknown ⇒ Unknown, unknown5: Unknown) =>
-      unknown1 == unknown2
+    forAll { (f: Int ⇒ String, g: Float ⇒ Int, h: Double => Float, i: Double => Double, x: Double) =>
+      val expectedVal = f(g(h(i(x))))
+      `(f ० g ० h ० i)(x)`(f)(g)(h)(i)(x) == expectedVal
     }
 
   }
